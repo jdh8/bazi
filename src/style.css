@@ -1,0 +1,272 @@
+:root {
+  font-family: "Noto Sans TC", system-ui, sans-serif;
+  color: #283b34;
+  background: #f7f7f2;
+  font-synthesis: none;
+  --green: #243e35;
+  --muted: #62705c;
+  --line: #e2e5dc;
+  --red: #b75d47;
+  --serif: "Noto Serif TC", "Songti TC", serif;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+}
+button,
+input,
+select {
+  font: inherit;
+}
+a {
+  color: inherit;
+  text-underline-offset: 4px;
+}
+input:focus-visible,
+select:focus-visible,
+a:focus-visible,
+summary:focus-visible {
+  outline: 3px solid #ba8050;
+  outline-offset: 3px;
+}
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.site-header {
+  height: 86px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+  border-bottom: 1px solid var(--line);
+  padding: 0 max(28px, calc((100vw - 960px) / 2));
+  background: #fafaf6;
+}
+.brand {
+  text-decoration: none;
+  white-space: nowrap;
+  font-family: var(--serif);
+  font-weight: 700;
+  font-size: 23px;
+  letter-spacing: 2px;
+}
+.brand small {
+  font-size: 16px;
+  letter-spacing: 3px;
+}
+.brand-divider {
+  font-weight: 400;
+  color: #a9ada1;
+  margin: 0 9px;
+}
+.timezone {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.timezone b {
+  font-size: 12px;
+  letter-spacing: 0.4px;
+  margin-left: 4px;
+}
+.status-dot {
+  width: 6px;
+  height: 6px;
+  background: #789277;
+  border-radius: 50%;
+}
+main {
+  max-width: 960px;
+  margin: auto;
+  padding: 36px 28px 20px;
+}
+h2 {
+  font-family: var(--serif);
+  font-size: 20px;
+  margin: 32px 0 8px;
+}
+
+.birth-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 24px;
+  align-items: end;
+}
+.birth-form label,
+.birth-form legend {
+  font-size: 13px;
+  color: var(--muted);
+}
+.birth-form > label {
+  display: grid;
+  gap: 6px;
+}
+.birth-form input:not([type="radio"]),
+.birth-form select {
+  border: 1px solid #d4ddcc;
+  background: white;
+  color: #344d39;
+  padding: 8px 9px;
+  border-radius: 4px;
+  font-size: 15px;
+  min-height: 40px;
+  max-width: 100%;
+}
+.birth-form fieldset {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  gap: 16px;
+  min-height: 40px;
+  align-items: center;
+}
+.birth-form fieldset legend {
+  float: left;
+  margin-right: 4px;
+  padding: 0;
+}
+.birth-form fieldset label {
+  font-size: 15px;
+  color: inherit;
+}
+input[type="radio"] {
+  accent-color: var(--green);
+}
+.status-message {
+  color: #a94e3f;
+  font-size: 14px;
+  min-height: 18px;
+  margin: 15px 0 0;
+}
+
+.table-scroll {
+  overflow-x: auto;
+  margin-top: 12px;
+}
+.pillars {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: center;
+  background: #fffefa;
+  border: 1px solid var(--line);
+}
+.pillars th,
+.pillars td {
+  border-bottom: 1px solid var(--line);
+  padding: 10px 8px;
+}
+.pillars thead th {
+  font-weight: 600;
+  color: var(--muted);
+  font-size: 14px;
+}
+.pillars tbody th {
+  font-weight: 500;
+  color: var(--muted);
+  font-size: 13px;
+  white-space: nowrap;
+  width: 4em;
+}
+.pillars .day-master {
+  background: #f0f3ea;
+}
+.pillars small,
+.liunian small {
+  color: var(--muted);
+}
+.glyph {
+  font-family: var(--serif);
+  font-weight: 700;
+  font-size: 28px;
+  color: var(--green);
+}
+.palaces {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 28px;
+  margin: 16px 0 0;
+}
+.palaces b {
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.dayun {
+  border-top: 1px solid var(--line);
+}
+.dayun:last-child {
+  border-bottom: 1px solid var(--line);
+}
+.dayun summary {
+  cursor: pointer;
+  padding: 10px 4px;
+  font-variant-numeric: tabular-nums;
+}
+.dayun .glyph {
+  font-size: 18px;
+}
+.dayun[open] summary {
+  background: #f0f3ea;
+}
+.liunian {
+  list-style: none;
+  margin: 0;
+  padding: 8px 4px 14px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 6px 16px;
+  font-variant-numeric: tabular-nums;
+}
+.liunian b {
+  font-weight: 500;
+}
+
+footer {
+  border-top: 1px solid var(--line);
+  max-width: min(904px, calc(100% - 56px));
+  margin: 40px auto 0;
+  padding: 24px 0 30px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 20px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.footer-brand {
+  font-family: var(--serif);
+  font-size: 15px;
+  letter-spacing: 2px;
+  color: #586b50;
+}
+
+@media (max-width: 500px) {
+  .site-header {
+    padding: 0 16px;
+  }
+  main {
+    padding: 24px 16px 20px;
+  }
+  footer {
+    max-width: calc(100% - 32px);
+  }
+  .pillars th,
+  .pillars td {
+    padding: 8px 4px;
+  }
+  .glyph {
+    font-size: 24px;
+  }
+}

@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#243e35" />
+    <meta
+      name="description"
+      content="輸入出生日期時間，排出八字四柱、藏干、十神、納音、長生、空亡、大運與流年。以台灣時間計算。"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&amp;family=Noto+Serif+TC:wght@500;600;700&amp;display=swap"
+    />
+    <link rel="stylesheet" href="/src/style.css" />
+    <title>八字命盤</title>
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="./">八字<span class="brand-divider"> / </span><small>命盤</small></a>
+      <span class="timezone"
+        ><span class="status-dot"></span>台灣時間 <b>UTC+8</b></span
+      >
+    </header>
+
+    <main id="main">
+      <h1 class="visually-hidden">八字命盤</h1>
+      <form id="form" class="birth-form">
+        <label>出生日期<input type="date" name="d" min="1801-01-01" max="2100-12-31" required /></label>
+        <label>出生時間<input type="time" name="t" required /></label>
+        <fieldset>
+          <legend>性別</legend>
+          <label><input type="radio" name="g" value="m" checked />男</label>
+          <label><input type="radio" name="g" value="f" />女</label>
+        </fieldset>
+        <label
+          >子時
+          <select name="z">
+            <option value="1">23:00 起算隔日</option>
+            <option value="2">早晚子時（晚子時日柱不換）</option>
+          </select>
+        </label>
+      </form>
+      <p id="status" class="status-message" role="alert"></p>
+      <div id="output" aria-live="polite"></div>
+    </main>
+    <footer>
+      <span class="footer-brand">八字・命盤</span>
+      <span
+        >以
+        <a href="https://github.com/6tail/lunar-javascript" target="_blank" rel="noopener">lunar-javascript</a>
+        排盤，固定 UTC+8，不校正真太陽時。</span
+      >
+    </footer>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
