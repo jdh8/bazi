@@ -28,8 +28,9 @@
     <main id="main">
       <h1 class="visually-hidden">八字命盤</h1>
       <form id="form" class="birth-form">
-        <label>出生日期<input type="date" name="d" min="1801-01-01" max="2100-12-31" required /></label>
-        <label>出生時間<input type="time" name="t" required /></label>
+        <label
+          >出生時間<input type="datetime-local" name="t" min="1801-01-01T00:00" max="2100-12-31T23:59" required
+        /></label>
         <fieldset>
           <legend>性別</legend>
           <label><input type="radio" name="g" value="m" checked />男</label>

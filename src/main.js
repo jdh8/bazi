@@ -12,7 +12,7 @@ const escape = (text) =>
 const form = $("#form");
 const thisYear = new Date().getFullYear();
 
-// Form field names double as URL params: ?d=1988-02-15&t=23:30&g=m&z=1
+// Form field names double as URL params: ?t=1988-02-15T23:30&g=m&z=1
 for (const [key, value] of new URL(location.href).searchParams)
   if (form.elements[key]) form.elements[key].value = value;
 
@@ -67,12 +67,13 @@ function update() {
   history.replaceState(null, "", `?${new URLSearchParams(data)}`);
   $("#status").textContent = "";
   $("#output").innerHTML = "";
-  if (!data.get("d") || !data.get("t")) return;
+  if (!data.get("t")) return;
+  const [date, time] = data.get("t").split("T");
   try {
     $("#output").innerHTML = render(
       chart({
-        date: data.get("d"),
-        time: data.get("t"),
+        date,
+        time,
         male: data.get("g") === "m",
         sect: Number(data.get("z")),
       }),
