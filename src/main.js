@@ -43,7 +43,7 @@ function render(c) {
       </table>
     </div>
     <p class="palaces">
-      ${palace("胎元", extra.taiYuan)}${palace("命宮", extra.mingGong)}${palace("身宮", extra.shenGong)}
+      <span><b>格局</b> <strong>${escape(c.geJu)}</strong></span>${palace("胎元", extra.taiYuan)}${palace("命宮", extra.mingGong)}${palace("身宮", extra.shenGong)}
     </p>
     <h2>大運</h2>
     <p>出生後 ${yun.startYear} 年 ${yun.startMonth} 個月 ${yun.startDay} 天起運（${escape(yun.startDate)}），大運${yun.forward ? "順" : "逆"}行。年齡為虛歲。</p>

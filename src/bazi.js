@@ -1,5 +1,5 @@
 import lunar from "lunar-javascript";
-const { Solar } = lunar;
+const { Solar, LunarUtil } = lunar;
 
 export const MIN_YEAR = 1801;
 export const MAX_YEAR = 2100;
@@ -37,6 +37,22 @@ export function parseTime(value) {
   return { hour: Number(match[1]), minute: Number(match[2]) };
 }
 
+const GAN = "甲乙丙丁戊己庚辛壬癸";
+const LU = "寅卯巳午巳午申酉亥子"; // 十干祿；陽干之刃、陰干之劫即同五行另一干之祿
+
+// 《子平真詮》月令取格：祿刃先論；否則月支藏干依本、中、餘氣取透干者，
+// 皆不透取本氣，比劫不成格。stems 為年、月、時干。
+// ponytail: 只論正格，不判從格、化氣、專旺等外格（需旺衰評分，各派不同）。
+export function geJu(dayGan, monthZhi, stems) {
+  const i = GAN.indexOf(dayGan);
+  if (monthZhi === LU[i]) return "建祿格";
+  if (monthZhi === LU[i ^ 1]) return i % 2 ? "月劫格" : "陽刃格";
+  const hidden = LunarUtil.ZHI_HIDE_GAN[monthZhi]
+    .map((gan) => ({ gan, shiShen: t(LunarUtil.SHI_SHEN[dayGan + gan]) }))
+    .filter((h) => h.shiShen !== "比肩" && h.shiShen !== "劫財");
+  return (hidden.find((h) => stems.includes(h.gan)) ?? hidden[0]).shiShen + "格";
+}
+
 const LABELS = { Year: "年柱", Month: "月柱", Day: "日柱", Time: "時柱" };
 
 export function chart({ date, time, male, sect }) {
@@ -68,8 +84,10 @@ export function chart({ date, time, male, sect }) {
   });
 
   const yun = ec.getYun(male ? 1 : 0);
+  const [y, m, d, h] = pillars;
   return {
     pillars,
+    geJu: geJu(d.gan, m.zhi, [y.gan, m.gan, h.gan]),
     extra: {
       taiYuan: palace("TaiYuan"),
       mingGong: palace("MingGong"),

@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import lunar from "lunar-javascript";
-import { chart, t, SIMPLIFIED } from "../src/bazi.js";
+import { chart, geJu, t, SIMPLIFIED } from "../src/bazi.js";
 
 // Known answers from lunar-javascript's own __tests__/EightChar.test.js and Yun.test.js.
 const ganZhi = (c) => c.pillars.map((p) => p.gan + p.zhi).join(" ");
@@ -47,6 +47,25 @@ test("輸出不含簡體", () => {
     const json = JSON.stringify(chart({ date, time, male: false, sect: 1 }));
     assert.doesNotMatch(json, new RegExp(`[${SIMPLIFIED}]`));
   }
+});
+
+test("格局", () => {
+  // 祿刃：土隨火
+  for (const [gan, zhi, name] of [
+    ["甲", "寅", "建祿格"], ["甲", "卯", "陽刃格"], ["乙", "寅", "月劫格"], ["乙", "卯", "建祿格"],
+    ["戊", "巳", "建祿格"], ["戊", "午", "陽刃格"], ["己", "巳", "月劫格"], ["己", "午", "建祿格"],
+  ])
+    assert.equal(geJu(gan, zhi, ["丙", "丙", "丙"]), name, gan + zhi);
+  // 庚日寅月藏甲丙戊：本氣透 > 中氣透 > 皆不透取本氣
+  assert.equal(geJu("庚", "寅", ["戊", "甲", "丙"]), "偏財格");
+  assert.equal(geJu("庚", "寅", ["壬", "丙", "壬"]), "七殺格");
+  assert.equal(geJu("庚", "寅", ["壬", "壬", "壬"]), "偏財格");
+  // 戊日辰月藏戊乙癸：本氣比肩不成格
+  assert.equal(geJu("戊", "辰", ["甲", "丙", "癸"]), "正財格");
+  assert.equal(geJu("戊", "辰", ["甲", "丙", "丙"]), "正官格");
+  // 經 chart()
+  assert.equal(chart({ date: "2005-12-23", time: "08:37", male: true, sect: 2 }).geJu, "食神格");
+  assert.equal(chart({ date: "1988-02-15", time: "23:30", male: true, sect: 2 }).geJu, "偏財格");
 });
 
 test("輸入驗證", () => {
