@@ -53,6 +53,29 @@ export function geJu(dayGan, monthZhi, stems) {
   return (hidden.find((h) => stems.includes(h.gan)) ?? hidden[0]).shiShen + "格";
 }
 
+const ZHI = "子丑寅卯辰巳午未申酉戌亥";
+const RELATIONS = ["同我", "我生", "我剋", "剋我", "生我"]; // 依相生序，自日主五行起
+
+// 十神對照：列為五行生剋，欄為與日主陰陽同、異。地支依本氣歸入。
+export function shiShenTable(dayGan) {
+  const d = GAN.indexOf(dayGan);
+  return RELATIONS.map((relation, k) => {
+    const e = ((d >> 1) + k) % 5;
+    return {
+      relation,
+      element: "木火土金水"[e],
+      cells: [d % 2, 1 - (d % 2)].map((p) => {
+        const gan = GAN[2 * e + p];
+        return {
+          gan,
+          zhi: [...ZHI].filter((z) => LunarUtil.ZHI_HIDE_GAN[z][0] === gan).join(""),
+          shiShen: t(LunarUtil.SHI_SHEN[dayGan + gan]),
+        };
+      }),
+    };
+  });
+}
+
 const LABELS = { Year: "年柱", Month: "月柱", Day: "日柱", Time: "時柱" };
 
 export function chart({ date, time, male, sect }) {
@@ -88,6 +111,7 @@ export function chart({ date, time, male, sect }) {
   return {
     pillars,
     geJu: geJu(d.gan, m.zhi, [y.gan, m.gan, h.gan]),
+    shiShenTable: shiShenTable(d.gan),
     extra: {
       taiYuan: palace("TaiYuan"),
       mingGong: palace("MingGong"),

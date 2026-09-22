@@ -9,6 +9,49 @@ const escape = (text) =>
         char
       ],
   );
+const ELEMENTS = {
+  wood: "木甲乙寅卯",
+  fire: "火丙丁巳午",
+  earth: "土戊己辰戌丑未",
+  metal: "金庚辛申酉",
+  water: "水壬癸亥子",
+};
+const elementOf = (c) => Object.keys(ELEMENTS).find((k) => ELEMENTS[k].includes(c));
+// Escape, then wrap each 干支 or 五行 glyph in its 五行 class.
+const wx = (text) =>
+  escape(text).replace(/./gu, (c) => {
+    const element = elementOf(c);
+    return element ? `<span class="${element}">${c}</span>` : c;
+  });
+
+// 五行圖：rows 依相生序，日主五行居上，順時針相生，隔一相剋。
+function wuXingGraph(rows) {
+  const R = 70, r = 18;
+  const at = (k, radius = R) => {
+    const a = ((k * 72 - 90) * Math.PI) / 180;
+    return [radius * Math.cos(a), radius * Math.sin(a)].map((v) => v.toFixed(1));
+  };
+  const edge = (k, step, cls) => {
+    const [x1, y1] = at(k), [x2, y2] = at(k + step);
+    const len = Math.hypot(x2 - x1, y2 - y1);
+    const dx = ((x2 - x1) / len) * (r + 3), dy = ((y2 - y1) / len) * (r + 3);
+    return `<line class="${cls}" x1="${x1 - -dx}" y1="${y1 - -dy}" x2="${x2 - dx}" y2="${y2 - dy}" marker-end="url(#arrow)"/>`;
+  };
+  return `
+    <figure class="wuxing">
+      <svg viewBox="-125 -118 250 216" role="img" aria-label="五行生剋圖">
+        <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z"/></marker></defs>
+        ${rows.map((_, k) => edge(k, 1, "sheng") + edge(k, 2, "ke")).join("")}
+        ${rows
+          .map((row, k) => {
+            const [x, y] = at(k), [lx, ly] = at(k, R + 34);
+            return `<g class="${elementOf(row.element)}"><circle cx="${x}" cy="${y}" r="${r}"/><text x="${x}" y="${y}">${row.element}</text></g><text class="relation" x="${lx}" y="${ly}">${row.relation}</text>`;
+          })
+          .join("")}
+      </svg>
+      <figcaption>實線相生，虛線相剋</figcaption>
+    </figure>`;
+}
 const form = $("#form");
 const thisYear = new Date().getFullYear();
 
@@ -24,37 +67,55 @@ const row = (name, pillars, cell) =>
 function render(c) {
   const { pillars, extra, yun } = c;
   const palace = (name, p) =>
-    `<span><b>${name}</b> ${escape(p.ganZhi)}（${escape(p.naYin)}）</span>`;
+    `<span><b>${name}</b> ${wx(p.ganZhi)}（${escape(p.naYin)}）</span>`;
   return `
     <div class="table-scroll">
       <table class="pillars">
         <thead><tr><td></td>${pillars.map((p) => `<th scope="col">${p.label}</th>`).join("")}</tr></thead>
         <tbody>
           ${row("十神", pillars, (p) => escape(p.shiShenGan))}
-          ${row("天干", pillars, (p) => `<span class="glyph">${escape(p.gan)}</span>`)}
-          ${row("地支", pillars, (p) => `<span class="glyph">${escape(p.zhi)}</span>`)}
+          ${row("天干", pillars, (p) => `<span class="glyph">${wx(p.gan)}</span>`)}
+          ${row("地支", pillars, (p) => `<span class="glyph">${wx(p.zhi)}</span>`)}
           ${row("藏干", pillars, (p) =>
-            p.hideGan.map((h) => `<div>${escape(h.gan)} <small>${escape(h.shiShen)}</small></div>`).join(""),
+            p.hideGan.map((h) => `<div>${wx(h.gan)} <small>${escape(h.shiShen)}</small></div>`).join(""),
           )}
           ${row("納音", pillars, (p) => escape(p.naYin))}
           ${row("長生", pillars, (p) => escape(p.diShi))}
-          ${row("空亡", pillars, (p) => escape(p.xunKong))}
+          ${row("空亡", pillars, (p) => wx(p.xunKong))}
         </tbody>
       </table>
     </div>
     <p class="palaces">
       <span><b>格局</b> <strong>${escape(c.geJu)}</strong></span>${palace("胎元", extra.taiYuan)}${palace("命宮", extra.mingGong)}${palace("身宮", extra.shenGong)}
     </p>
+    <h2>十神</h2>
+    <div class="shishen-wrap">
+    <div class="table-scroll">
+      <table class="pillars shishen">
+        <thead><tr><td></td><th scope="col">陰陽同</th><th scope="col">陰陽異</th></tr></thead>
+        <tbody>
+          ${c.shiShenTable
+            .map(
+              (r) => `<tr><th scope="row">${r.relation}${wx(r.element)}</th>${r.cells
+                .map((x) => `<td><b>${escape(x.shiShen)}</b> ${wx(x.gan + x.zhi)}</td>`)
+                .join("")}</tr>`,
+            )
+            .join("")}
+        </tbody>
+      </table>
+    </div>
+    ${wuXingGraph(c.shiShenTable)}
+    </div>
     <h2>大運</h2>
     <p>出生後 ${yun.startYear} 年 ${yun.startMonth} 個月 ${yun.startDay} 天起運（${escape(yun.startDate)}），大運${yun.forward ? "順" : "逆"}行。年齡為虛歲。</p>
     ${yun.daYun
       .map(
         (d) => `
       <details class="dayun"${d.startYear <= thisYear && thisYear <= d.endYear ? " open" : ""}>
-        <summary><span class="glyph">${escape(d.ganZhi) || "起運前"}</span>　${d.startAge}–${d.endAge} 歲　${d.startYear}–${d.endYear}</summary>
+        <summary><span class="glyph">${wx(d.ganZhi) || "起運前"}</span>　${d.startAge}–${d.endAge} 歲　${d.startYear}–${d.endYear}</summary>
         <ol class="liunian">
           ${d.liuNian
-            .map((n) => `<li><b>${n.year}</b> ${escape(n.ganZhi)} <small>${n.age} 歲</small></li>`)
+            .map((n) => `<li><b>${n.year}</b> ${wx(n.ganZhi)} <small>${n.age} 歲</small></li>`)
             .join("")}
         </ol>
       </details>`,

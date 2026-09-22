@@ -191,6 +191,74 @@ input[type="radio"] {
   font-size: 28px;
   color: var(--green);
 }
+.wood {
+  color: #2a7244;
+}
+.fire {
+  color: #b83f33;
+}
+.earth {
+  color: #8a5c22;
+}
+.metal {
+  color: #666666;
+}
+.water {
+  color: #1d4690;
+}
+.shishen td {
+  text-align: left;
+  padding-left: 1.5em;
+}
+.shishen b {
+  font-weight: 500;
+  margin-right: 0.5em;
+}
+.shishen-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0 24px;
+}
+.shishen-wrap .table-scroll {
+  flex: 1 1 360px;
+}
+.wuxing {
+  flex: 0 1 250px;
+  margin: 12px auto 0;
+  text-align: center;
+  font-size: 13px;
+  color: var(--muted);
+}
+.wuxing svg {
+  display: block;
+  width: 100%;
+}
+.wuxing line {
+  stroke: #a9ada1;
+  stroke-width: 1.5;
+}
+.wuxing .ke {
+  stroke-dasharray: 4 3;
+}
+.wuxing marker path {
+  fill: #a9ada1;
+}
+.wuxing circle {
+  fill: currentColor;
+}
+.wuxing text {
+  text-anchor: middle;
+  dominant-baseline: central;
+  font-size: 13px;
+  fill: var(--muted);
+}
+.wuxing g text {
+  font-family: var(--serif);
+  font-weight: 700;
+  font-size: 18px;
+  fill: white;
+}
 .palaces {
   display: flex;
   flex-wrap: wrap;

@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import lunar from "lunar-javascript";
-import { chart, geJu, t, SIMPLIFIED } from "../src/bazi.js";
+import { chart, geJu, shiShenTable, t, SIMPLIFIED } from "../src/bazi.js";
 
 // Known answers from lunar-javascript's own __tests__/EightChar.test.js and Yun.test.js.
 const ganZhi = (c) => c.pillars.map((p) => p.gan + p.zhi).join(" ");
@@ -72,4 +72,17 @@ test("輸入驗證", () => {
   assert.throws(() => chart({ date: "1800-12-31", time: "00:00", male: true, sect: 2 }), RangeError);
   assert.throws(() => chart({ date: "2023-02-29", time: "00:00", male: true, sect: 2 }), RangeError);
   assert.throws(() => chart({ date: "2023-02-28", time: "24:00", male: true, sect: 2 }), RangeError);
+});
+
+test("十神對照", () => {
+  const row = (dayGan) =>
+    shiShenTable(dayGan).map((r) => r.relation + r.element + r.cells.map((c) => c.shiShen + c.gan + c.zhi).join(""));
+  assert.deepEqual(row("甲"), [
+    "同我木比肩甲寅劫財乙卯",
+    "我生火食神丙巳傷官丁午",
+    "我剋土偏財戊辰戌正財己丑未",
+    "剋我金七殺庚申正官辛酉",
+    "生我水偏印壬亥正印癸子",
+  ]);
+  assert.equal(row("癸")[3], "剋我土七殺己丑未正官戊辰戌");
 });
