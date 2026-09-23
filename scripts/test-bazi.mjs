@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import lunar from "lunar-javascript";
-import { chart, geJu, liuYue, shiShenTable, t, SIMPLIFIED } from "../src/bazi.js";
+import { chart, geJu, liuYue, relationTable, shiShenTable, t, SIMPLIFIED } from "../src/bazi.js";
 
 // Known answers from lunar-javascript's own __tests__/EightChar.test.js and Yun.test.js.
 const ganZhi = (c) => c.pillars.map((p) => p.gan + p.zhi).join(" ");
@@ -100,4 +100,20 @@ test("流月", () => {
      "立秋08-07", "白露09-08", "寒露10-08", "立冬11-07", "大雪12-07", "小寒01-06"],
   );
   assert.equal(liuYue(2014)[11].date, "2015-01-06");
+});
+
+test("合沖刑害對照", () => {
+  const pillars = ["戊辰", "甲寅", "辛丑", "戊子"].map(([gan, zhi]) => ({ gan, zhi }));
+  assert.deepEqual(
+    relationTable(pillars).map((r) => r.name + " " + r.cells.join(" ")),
+    [
+      "天干合 癸 己 丙 癸",
+      "天干沖  庚 乙 ", // 戊己不沖
+      "六合 酉 亥 子 丑",
+      "半合 子 午 酉 辰申", // 申辰拱合不計
+      "六沖 戌 申 未 午",
+      "相刑 辰 巳申 未戌 卯", // 辰自刑
+      "六害 卯 巳 午 未",
+    ],
+  );
 });

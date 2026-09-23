@@ -94,6 +94,44 @@ export function liuYue(year) {
   });
 }
 
+const ganRelations = (a, b) => {
+  const d = Math.abs(GAN.indexOf(a) - GAN.indexOf(b));
+  return d === 5 ? ["合"] : d === 6 ? ["沖"] : []; // 甲己合、甲庚沖，戊己不沖
+};
+
+// 六合 i+j≡1、六害 i+j≡7、六沖差 6；三合局 i≡j (mod 4)，含子午卯酉者為半合（生墓拱合不計）。
+function zhiRelations(a, b) {
+  const i = ZHI.indexOf(a), j = ZHI.indexOf(b);
+  const xing =
+    a === b ? "辰午酉亥".includes(a) : ["寅巳申", "丑戌未", "子卯"].some((s) => s.includes(a) && s.includes(b));
+  return [
+    [(i + j) % 12 === 1, "合"],
+    [i !== j && i % 4 === j % 4 && (i % 3 === 0 || j % 3 === 0), "半合"],
+    [Math.abs(i - j) === 6, "沖"],
+    [xing, "刑"],
+    [(i + j) % 12 === 7, "害"],
+  ].flatMap(([hit, name]) => (hit ? [name] : []));
+}
+
+const ROWS = [
+  ["天干合", "gan", ganRelations, "合"],
+  ["天干沖", "gan", ganRelations, "沖"],
+  ["六合", "zhi", zhiRelations, "合"],
+  ["半合", "zhi", zhiRelations, "半合"],
+  ["六沖", "zhi", zhiRelations, "沖"],
+  ["相刑", "zhi", zhiRelations, "刑"],
+  ["六害", "zhi", zhiRelations, "害"],
+];
+
+// 合沖刑害對照：每柱列出與其干或支合、沖、刑、害者，供流年、流月查表。
+export const relationTable = (pillars) =>
+  ROWS.map(([name, key, relations, r]) => ({
+    name,
+    cells: pillars.map((p) =>
+      [...(key === "gan" ? GAN : ZHI)].filter((x) => relations(x, p[key]).includes(r)).join(""),
+    ),
+  }));
+
 const LABELS = { Year: "年柱", Month: "月柱", Day: "日柱", Time: "時柱" };
 
 export function chart({ date, time, male, sect }) {
@@ -130,6 +168,7 @@ export function chart({ date, time, male, sect }) {
     pillars,
     geJu: geJu(d.gan, m.zhi, [y.gan, m.gan, h.gan]),
     shiShenTable: shiShenTable(d.gan),
+    relationTable: relationTable(pillars),
     extra: {
       taiYuan: palace("TaiYuan"),
       mingGong: palace("MingGong"),

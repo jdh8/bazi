@@ -112,6 +112,14 @@ function render(c, year) {
     </div>
     ${wuXingGraph(c.shiShenTable)}
     </div>
+    <h2>合沖刑害</h2>
+    <p>流年、流月的干或支出現在某格，即與該柱有此關係；大運同理。與某柱干支全同為伏吟，干支皆沖為反吟。</p>
+    <div class="table-scroll">
+      <table class="pillars">
+        <thead><tr><td></td>${pillars.map((p) => `<th scope="col">${p.label}</th>`).join("")}</tr></thead>
+        <tbody>${c.relationTable.map((r) => row(r.name, r.cells, wx)).join("")}</tbody>
+      </table>
+    </div>
     <h2>大運</h2>
     <p>出生後 ${yun.startYear} 年 ${yun.startMonth} 個月 ${yun.startDay} 天起運（${day(yun.startDate)}），大運${yun.forward ? "順" : "逆"}行。年齡為虛歲。點選流年看流月，流月日期連到萬年曆。</p>
     ${yun.daYun
