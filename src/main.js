@@ -62,7 +62,12 @@ const form = $("#form");
 const thisYear = new Date().getFullYear();
 
 // Form field names double as URL params: ?t=1988-02-15T23:30&g=m&z=1&y=2026
-for (const [key, value] of new URL(location.href).searchParams)
+// No params: restore the last input from localStorage, else the HTML defaults.
+let saved = "";
+try {
+  saved = localStorage.getItem("bazi") ?? "";
+} catch {}
+for (const [key, value] of new URLSearchParams(location.search || saved))
   if (form.elements[key]) form.elements[key].value = value;
 
 const row = (name, pillars, cell) =>
@@ -174,7 +179,13 @@ function update() {
   }
 }
 
-form.addEventListener("input", update);
+// Only user edits are saved, so opening a shared link keeps the viewer's own input.
+form.addEventListener("input", () => {
+  update();
+  try {
+    localStorage.setItem("bazi", location.search);
+  } catch {}
+});
 $("#output").addEventListener("click", (event) => {
   const year = event.target.closest("[data-year]")?.dataset.year;
   if (!year) return;
