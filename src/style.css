@@ -50,12 +50,20 @@ summary:focus-visible {
   background: #fafaf6;
 }
 .brand {
+  display: flex;
+  align-items: center;
+  gap: 13px;
   text-decoration: none;
   white-space: nowrap;
   font-family: var(--serif);
   font-weight: 700;
   font-size: 23px;
   letter-spacing: 2px;
+}
+.brand-mark {
+  width: 41px;
+  height: 41px;
+  flex-shrink: 0;
 }
 .brand small {
   font-size: 16px;
