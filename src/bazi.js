@@ -41,16 +41,39 @@ const GAN = "甲乙丙丁戊己庚辛壬癸";
 const LU = "寅卯巳午巳午申酉亥子"; // 十干祿；陽干之刃、陰干之劫即同五行另一干之祿
 
 // 《子平真詮》月令取格：祿刃先論；否則月支藏干依本、中、餘氣取透干者，
-// 皆不透取本氣，比劫不成格。stems 為年、月、時干。
+// 皆不透取本氣，比劫不成格。stems 為年、月、時干。steps 為推導過程，供頁面說明。
 // ponytail: 只論正格，不判從格、化氣、專旺等外格（需旺衰評分，各派不同）。
 export function geJu(dayGan, monthZhi, stems) {
   const i = GAN.indexOf(dayGan);
-  if (monthZhi === LU[i]) return "建祿格";
-  if (monthZhi === LU[i ^ 1]) return i % 2 ? "月劫格" : "陽刃格";
-  const hidden = LunarUtil.ZHI_HIDE_GAN[monthZhi]
-    .map((gan) => ({ gan, shiShen: t(LunarUtil.SHI_SHEN[dayGan + gan]) }))
-    .filter((h) => h.shiShen !== "比肩" && h.shiShen !== "劫財");
-  return (hidden.find((h) => stems.includes(h.gan)) ?? hidden[0]).shiShen + "格";
+  const ren = i % 2 ? "劫" : "刃";
+  if (monthZhi === LU[i])
+    return { name: "建祿格", steps: [`月令${monthZhi}為日主${dayGan}之祿`] };
+  if (monthZhi === LU[i ^ 1])
+    return { name: i % 2 ? "月劫格" : "陽刃格", steps: [`月令${monthZhi}為日主${dayGan}之${ren}`] };
+  const all = LunarUtil.ZHI_HIDE_GAN[monthZhi].map((gan, k) => ({
+    gan,
+    qi: ["本氣", "中氣", "餘氣"][k],
+    shiShen: t(LunarUtil.SHI_SHEN[dayGan + gan]),
+  }));
+  const hidden = all.filter((h) => h.shiShen !== "比肩" && h.shiShen !== "劫財");
+  const shown = hidden.filter((h) => stems.includes(h.gan));
+  const pick = shown[0] ?? hidden[0];
+  const name = pick.shiShen + "格";
+  return {
+    name,
+    steps: [
+      `月令${monthZhi}非日主${dayGan}之祿（${LU[i]}）、${ren}（${LU[i ^ 1]}）`,
+      `${monthZhi}藏${all
+        .map((h) => `${h.gan}${h.shiShen}（${h.qi}${hidden.includes(h) ? "" : "，比劫不成格"}）`)
+        .join("、")}`,
+      `年、月、時干為${stems.join("、")}：` +
+        (shown.length === 0
+          ? `皆不透，取${pick.qi}${pick.gan} → ${name}`
+          : shown.length === 1
+            ? `${pick.gan}透 → ${name}`
+            : `${shown.map((h) => h.gan).join("、")}皆透，依本、中、餘氣之序取${pick.gan} → ${name}`),
+    ],
+  };
 }
 
 const ZHI = "子丑寅卯辰巳午未申酉戌亥";

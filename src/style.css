@@ -261,6 +261,25 @@ input[type="radio"] {
   /* central 基線下 Noto Serif TC 墨跡偏低約 1px；上移使墨心居中、外框略高於幾何中心（視覺中心） */
   transform: translateY(-0.08em);
 }
+.geju {
+  margin: 16px 0 0;
+}
+.geju summary {
+  cursor: pointer;
+}
+.geju b {
+  font-weight: 600;
+  color: var(--muted);
+}
+.geju ol {
+  margin: 8px 0 0;
+  padding-left: 1.6em;
+}
+.geju p {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 14px;
+}
 .palaces {
   display: flex;
   flex-wrap: wrap;

@@ -91,8 +91,13 @@ function render(c, year) {
         </tbody>
       </table>
     </div>
+    <details class="geju">
+      <summary><b>格局</b> <strong>${escape(c.geJu.name)}</strong></summary>
+      <ol>${c.geJu.steps.map((s) => `<li>${wx(s)}</li>`).join("")}</ol>
+      <p>依《子平真詮》月令取格，只論正格。</p>
+    </details>
     <p class="palaces">
-      <span><b>格局</b> <strong>${escape(c.geJu)}</strong></span>${palace("胎元", extra.taiYuan)}${palace("命宮", extra.mingGong)}${palace("身宮", extra.shenGong)}
+      ${palace("胎元", extra.taiYuan)}${palace("命宮", extra.mingGong)}${palace("身宮", extra.shenGong)}
     </p>
     <h2>十神</h2>
     <div class="shishen-wrap">

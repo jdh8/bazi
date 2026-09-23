@@ -55,17 +55,26 @@ test("格局", () => {
     ["甲", "寅", "建祿格"], ["甲", "卯", "陽刃格"], ["乙", "寅", "月劫格"], ["乙", "卯", "建祿格"],
     ["戊", "巳", "建祿格"], ["戊", "午", "陽刃格"], ["己", "巳", "月劫格"], ["己", "午", "建祿格"],
   ])
-    assert.equal(geJu(gan, zhi, ["丙", "丙", "丙"]), name, gan + zhi);
+    assert.equal(geJu(gan, zhi, ["丙", "丙", "丙"]).name, name, gan + zhi);
   // 庚日寅月藏甲丙戊：本氣透 > 中氣透 > 皆不透取本氣
-  assert.equal(geJu("庚", "寅", ["戊", "甲", "丙"]), "偏財格");
-  assert.equal(geJu("庚", "寅", ["壬", "丙", "壬"]), "七殺格");
-  assert.equal(geJu("庚", "寅", ["壬", "壬", "壬"]), "偏財格");
+  assert.equal(geJu("庚", "寅", ["戊", "甲", "丙"]).name, "偏財格");
+  assert.equal(geJu("庚", "寅", ["壬", "丙", "壬"]).name, "七殺格");
+  assert.equal(geJu("庚", "寅", ["壬", "壬", "壬"]).name, "偏財格");
   // 戊日辰月藏戊乙癸：本氣比肩不成格
-  assert.equal(geJu("戊", "辰", ["甲", "丙", "癸"]), "正財格");
-  assert.equal(geJu("戊", "辰", ["甲", "丙", "丙"]), "正官格");
+  assert.equal(geJu("戊", "辰", ["甲", "丙", "癸"]).name, "正財格");
+  assert.equal(geJu("戊", "辰", ["甲", "丙", "丙"]).name, "正官格");
+  // 推導過程
+  assert.deepEqual(geJu("戊", "辰", ["甲", "丙", "癸"]).steps, [
+    "月令辰非日主戊之祿（巳）、刃（午）",
+    "辰藏戊比肩（本氣，比劫不成格）、乙正官（中氣）、癸正財（餘氣）",
+    "年、月、時干為甲、丙、癸：癸透 → 正財格",
+  ]);
+  assert.deepEqual(geJu("庚", "寅", ["戊", "甲", "丙"]).steps.at(-1), "年、月、時干為戊、甲、丙：甲、丙、戊皆透，依本、中、餘氣之序取甲 → 偏財格");
+  assert.deepEqual(geJu("庚", "寅", ["壬", "壬", "壬"]).steps.at(-1), "年、月、時干為壬、壬、壬：皆不透，取本氣甲 → 偏財格");
+  assert.deepEqual(geJu("乙", "寅", []).steps, ["月令寅為日主乙之劫"]);
   // 經 chart()
-  assert.equal(chart({ date: "2005-12-23", time: "08:37", male: true, sect: 2 }).geJu, "食神格");
-  assert.equal(chart({ date: "1988-02-15", time: "23:30", male: true, sect: 2 }).geJu, "偏財格");
+  assert.equal(chart({ date: "2005-12-23", time: "08:37", male: true, sect: 2 }).geJu.name, "食神格");
+  assert.equal(chart({ date: "1988-02-15", time: "23:30", male: true, sect: 2 }).geJu.name, "偏財格");
 });
 
 test("輸入驗證", () => {
