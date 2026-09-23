@@ -258,6 +258,8 @@ input[type="radio"] {
   font-weight: 700;
   font-size: 18px;
   fill: white;
+  /* central 基線下 Noto Serif TC 墨跡偏低約 1px；上移使墨心居中、外框略高於幾何中心（視覺中心） */
+  transform: translateY(-0.08em);
 }
 .palaces {
   display: flex;
