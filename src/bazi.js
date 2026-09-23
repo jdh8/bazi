@@ -1,5 +1,5 @@
 import lunar from "lunar-javascript";
-const { Solar, LunarUtil } = lunar;
+const { Solar, Lunar, LunarUtil } = lunar;
 
 export const MIN_YEAR = 1801;
 export const MAX_YEAR = 2100;
@@ -8,7 +8,7 @@ export const MAX_YEAR = 2100;
 const CHT = {
   财: "財", 伤: "傷", 杀: "殺", 长: "長", 带: "帶", 临: "臨", 绝: "絕", 养: "養",
   炉: "爐", 剑: "劍", 锋: "鋒", 头: "頭", 涧: "澗", 蜡: "蠟", 杨: "楊", 雳: "靂",
-  灯: "燈", 驿: "驛", 钗: "釵", 钏: "釧",
+  灯: "燈", 驿: "驛", 钗: "釵", 钏: "釧", 惊: "驚", 蛰: "蟄", 种: "種",
 };
 export const SIMPLIFIED = Object.keys(CHT).join("");
 export const t = (s) => String(s).replace(/./gu, (c) => CHT[c] ?? c);
@@ -72,6 +72,24 @@ export function shiShenTable(dayGan) {
           shiShen: t(LunarUtil.SHI_SHEN[dayGan + gan]),
         };
       }),
+    };
+  });
+}
+
+const JIE = ["立春", "惊蛰", "清明", "立夏", "芒种", "小暑", "立秋", "白露", "寒露", "立冬", "大雪", "XIAO_HAN"];
+
+// 流月：流年 year 的十二月，各自該月之節起（寅月立春起，丑月為次年小寒）。
+// 月柱干支每年推進十二位，(year - 4) * 12 + 2 為該年寅月於六十甲子之序。
+export function liuYue(year) {
+  const table = Lunar.fromYmd(year, 6, 1).getJieQiTable();
+  return JIE.map((key, i) => {
+    const k = ((year - 4) * 12 + 2 + i) % 60;
+    const [date, time] = table[key].toYmdHms().split(" ");
+    return {
+      ganZhi: GAN[k % 10] + ZHI[k % 12],
+      jie: key === "XIAO_HAN" ? "小寒" : t(key),
+      date,
+      time: time.slice(0, 5),
     };
   });
 }

@@ -1,4 +1,4 @@
-import { chart } from "./bazi.js";
+import { chart, liuYue } from "./bazi.js";
 
 const $ = (selector) => document.querySelector(selector);
 const escape = (text) =>
@@ -52,10 +52,16 @@ function wuXingGraph(rows) {
       <figcaption>實線相生，虛線相剋</figcaption>
     </figure>`;
 }
+// 日期連到萬年曆（jdh8/calendar），範圍外不連。
+const CALENDAR = "https://jdh8.github.io/calendar/";
+const day = (date, text = date) =>
+  date.slice(0, 4) <= "2100"
+    ? `<a href="${CALENDAR}?date=${date}" target="_blank" rel="noopener">${text}</a>`
+    : text;
 const form = $("#form");
 const thisYear = new Date().getFullYear();
 
-// Form field names double as URL params: ?t=1988-02-15T23:30&g=m&z=1
+// Form field names double as URL params: ?t=1988-02-15T23:30&g=m&z=1&y=2026
 for (const [key, value] of new URL(location.href).searchParams)
   if (form.elements[key]) form.elements[key].value = value;
 
@@ -64,7 +70,7 @@ const row = (name, pillars, cell) =>
     .map((p, i) => `<td${i === 2 ? ' class="day-master"' : ""}>${cell(p)}</td>`)
     .join("")}</tr>`;
 
-function render(c) {
+function render(c, year) {
   const { pillars, extra, yun } = c;
   const palace = (name, p) =>
     `<span><b>${name}</b> ${wx(p.ganZhi)}（${escape(p.naYin)}）</span>`;
@@ -107,17 +113,27 @@ function render(c) {
     ${wuXingGraph(c.shiShenTable)}
     </div>
     <h2>大運</h2>
-    <p>出生後 ${yun.startYear} 年 ${yun.startMonth} 個月 ${yun.startDay} 天起運（${escape(yun.startDate)}），大運${yun.forward ? "順" : "逆"}行。年齡為虛歲。</p>
+    <p>出生後 ${yun.startYear} 年 ${yun.startMonth} 個月 ${yun.startDay} 天起運（${day(yun.startDate)}），大運${yun.forward ? "順" : "逆"}行。年齡為虛歲。點選流年看流月，流月日期連到萬年曆。</p>
     ${yun.daYun
       .map(
         (d) => `
-      <details class="dayun"${d.startYear <= thisYear && thisYear <= d.endYear ? " open" : ""}>
+      <details class="dayun"${d.startYear <= year && year <= d.endYear ? " open" : ""}>
         <summary><span class="glyph">${wx(d.ganZhi) || "起運前"}</span>　${d.startAge}–${d.endAge} 歲　${d.startYear}–${d.endYear}</summary>
         <ol class="liunian">
           ${d.liuNian
-            .map((n) => `<li><b>${n.year}</b> ${wx(n.ganZhi)} <small>${n.age} 歲</small></li>`)
+            .map(
+              (n) =>
+                `<li><button type="button" data-year="${n.year}"${n.year === year ? ' aria-current="true"' : ""}><b>${n.year}</b> ${wx(n.ganZhi)} <small>${n.age} 歲</small></button></li>`,
+            )
             .join("")}
         </ol>
+        ${
+          d.startYear <= year && year <= d.endYear
+            ? `<ol class="liuyue" aria-label="${year} 年流月">${liuYue(year)
+                .map((m) => `<li><b>${wx(m.ganZhi)}</b> ${m.jie} <small>${day(m.date, m.date.slice(5).replace("-", "/"))} ${m.time}</small></li>`)
+                .join("")}</ol>`
+            : ""
+        }
       </details>`,
       )
       .join("")}`;
@@ -138,6 +154,7 @@ function update() {
         male: data.get("g") === "m",
         sect: Number(data.get("z")),
       }),
+      Number(data.get("y")) || thisYear,
     );
   } catch (error) {
     $("#status").textContent = error.message;
@@ -145,6 +162,13 @@ function update() {
 }
 
 form.addEventListener("input", update);
+$("#output").addEventListener("click", (event) => {
+  const year = event.target.closest("[data-year]")?.dataset.year;
+  if (!year) return;
+  form.elements.y.value = year;
+  update();
+  $(`[data-year="${year}"]`).focus();
+});
 form.addEventListener("submit", (event) => {
   event.preventDefault();
   update();

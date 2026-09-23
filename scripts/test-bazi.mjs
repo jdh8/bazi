@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import lunar from "lunar-javascript";
-import { chart, geJu, shiShenTable, t, SIMPLIFIED } from "../src/bazi.js";
+import { chart, geJu, liuYue, shiShenTable, t, SIMPLIFIED } from "../src/bazi.js";
 
 // Known answers from lunar-javascript's own __tests__/EightChar.test.js and Yun.test.js.
 const ganZhi = (c) => c.pillars.map((p) => p.gan + p.zhi).join(" ");
@@ -85,4 +85,19 @@ test("十神對照", () => {
     "生我水偏印壬亥正印癸子",
   ]);
   assert.equal(row("癸")[3], "剋我土七殺己丑未正官戊辰戌");
+});
+
+test("流月", () => {
+  // 干支與庫的 LiuYue 一致，涵蓋十干年
+  const ec = lunar.Solar.fromYmd(1988, 2, 15).getLunar().getEightChar();
+  for (const d of ec.getYun(1).getDaYun().slice(1, 3))
+    for (const n of d.getLiuNian())
+      assert.deepEqual(liuYue(n.getYear()).map((m) => m.ganZhi), n.getLiuYue().map((m) => m.getGanZhi()));
+  // 節起日：日本國立天文台 2014 年表
+  assert.deepEqual(
+    liuYue(2014).map((m) => m.jie + m.date.slice(5)),
+    ["立春02-04", "驚蟄03-06", "清明04-05", "立夏05-05", "芒種06-06", "小暑07-07",
+     "立秋08-07", "白露09-08", "寒露10-08", "立冬11-07", "大雪12-07", "小寒01-06"],
+  );
+  assert.equal(liuYue(2014)[11].date, "2015-01-06");
 });
